@@ -3,6 +3,7 @@ from src.gasprice.gasPrice import gp_updater
 import time
 from src.tg.interface import interface
 from src.tg.notice_sender import notice_sender
+from src.db.db_connect import Base, engine
 
 def main():
     with multiprocessing.Manager() as manager:
@@ -13,6 +14,9 @@ def main():
         gp_updater_process = multiprocessing.Process(target=gp_updater, args=(gp_data, eth_price))
         interface_process = multiprocessing.Process(target=interface, args=(gp_data, eth_price))
         notice_sender_process = multiprocessing.Process(target=notice_sender, args=(gp_data,))
+
+        print('Creating Database...')
+        Base.metadata.create_all(engine)
 
         gp_updater_process.start()
         print('gp updater started')
